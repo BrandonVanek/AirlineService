@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AirlineService.Data;
 using AirlineService.Models;
+using AirlineService.DTO;
 
 namespace AirlineService.Controllers
 {
@@ -84,7 +85,7 @@ namespace AirlineService.Controllers
         // POST: api/Passengers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Passenger>> PostPassenger(Passenger passengerDto)
+        public async Task<ActionResult<Passenger>> PostPassenger(PassengerDTO passengerDto)
         {
           if (_context.Passengers == null)
           {
