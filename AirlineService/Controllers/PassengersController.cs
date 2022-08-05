@@ -84,12 +84,23 @@ namespace AirlineService.Controllers
         // POST: api/Passengers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Passenger>> PostPassenger(Passenger passenger)
+        public async Task<ActionResult<Passenger>> PostPassenger(Passenger passengerDto)
         {
           if (_context.Passengers == null)
           {
               return Problem("Entity set 'AirlineServiceDbContext.Passengers'  is null.");
           }
+
+            var flights = new List<Flight>();
+            var passenger = new Passenger()
+            {
+                Name = passengerDto.Name,
+                Job = passengerDto.Job,
+                Email = passengerDto.Email,
+                Age = passengerDto.Age,
+                Flights = (ICollection<Booking>)flights
+            };
+
             _context.Passengers.Add(passenger);
             await _context.SaveChangesAsync();
 

@@ -6,8 +6,9 @@ namespace AirlineService.Data
     public class AirlineServiceDbContext : DbContext
     {
         public AirlineServiceDbContext(DbContextOptions<AirlineServiceDbContext> options) : base(options) { }
-        public DbSet<Flight> Flights { get; set; }
-        public DbSet<Passenger> Passengers { get; set; }
+        public DbSet<Flight>? Flights { get; set; }
+        public DbSet<Passenger>? Passengers { get; set; }
+        public DbSet<Booking>? Booking { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Booking>()
@@ -23,6 +24,5 @@ namespace AirlineService.Data
                 .WithMany(t => t.Flights)
                 .HasForeignKey(pt => pt.PassengerId);
         }
-        public DbSet<AirlineService.Models.Booking>? Booking { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AirlineService.Data;
 using AirlineService.Models;
+using AirlineService.DTO;
 
 namespace AirlineService.Controllers
 {
@@ -84,16 +85,30 @@ namespace AirlineService.Controllers
         // POST: api/Flights
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Flight>> PostFlight(Flight flight)
+        public async Task<ActionResult<Flight>> PostFlight(FlightDTO flightDto)
         {
           if (_context.Flights == null)
           {
               return Problem("Entity set 'FlightDbContext.Flights'  is null.");
           }
+
+            var passengers = new List<Passenger>();
+            var flight = new Flight()
+            {
+                FlightNumber = flightDto.FlightNumber,
+                Destination = flightDto.Destination,
+                DepartureDateTime = flightDto.DepartureDateTime,
+                ArrivalDateTime = flightDto.ArrivalDateTime,
+                DepartureAirport = flightDto.DepartureAirport,
+                ArrivalAirport = flightDto.ArrivalAirport,
+                MaxCapacity = flightDto.MaxCapacity,
+                Passengers = (ICollection<Booking>)passengers
+            };
+
             _context.Flights.Add(flight);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetFlight", new { id = flight.Id }, flight);
+            return CreatedAtAction("GetFlight", new { id = flight.Id }, flightDto);
         }
 
         // DELETE: api/Flights/5
