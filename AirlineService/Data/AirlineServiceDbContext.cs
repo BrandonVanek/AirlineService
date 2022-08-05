@@ -5,9 +5,7 @@ namespace AirlineService.Data
 {
     public class AirlineServiceDbContext : DbContext
     {
-        public AirlineServiceDbContext(DbContextOptions<AirlineServiceDbContext> options) : base(options)
-        {
-        }
+        public AirlineServiceDbContext(DbContextOptions<AirlineServiceDbContext> options) : base(options) { }
         public DbSet<Flight> Flights { get; set; }
         public DbSet<Passenger> Passengers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

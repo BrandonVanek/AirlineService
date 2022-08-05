@@ -10,6 +10,6 @@
         public string DepartureAirport { get; set; }
         public string ArrivalAirport { get; set; }
         public int MaxCapacity { get; set; }
-        public List<Booking> Passengers { get; set; }
+        public virtual ICollection<Booking>? Passengers { get; set; }
     }
 }

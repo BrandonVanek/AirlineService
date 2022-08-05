@@ -7,6 +7,6 @@
         public string Job { get; set; }
         public string Email { get; set; }
         public int Age { get; set; }
-        public List<Booking> Flights { get; set; }
+        public virtual ICollection<Booking>? Flights { get; set; }
     }
 }
