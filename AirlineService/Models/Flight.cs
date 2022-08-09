@@ -1,4 +1,6 @@
-﻿namespace AirlineService.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace AirlineService.Models
 {
     public class Flight
     {
@@ -10,6 +12,7 @@
         public string DepartureAirport { get; set; }
         public string ArrivalAirport { get; set; }
         public int MaxCapacity { get; set; }
-        public virtual ICollection<Booking> Passengers { get; set; }
+        [ForeignKey("FlightId")]
+        public virtual ICollection<Passenger> Passengers { get; set; }
     }
 }

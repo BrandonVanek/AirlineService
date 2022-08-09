@@ -4,7 +4,7 @@
 
 namespace AirlineService.Migrations
 {
-    public partial class ThirdMigration : Migration
+    public partial class test2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

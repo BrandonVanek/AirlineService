@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.Extensions.Configuration;
 using AirlineService.Data;
+using System.Text.Json.Serialization;
 
 namespace AirlineService
 {
@@ -15,6 +16,12 @@ namespace AirlineService
             builder.Services.AddDbContext<AirlineServiceDbContext>(options => {
                 options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]);
             });
+            //builder.Services.AddControllers()
+            //     .AddJsonOptions(o =>
+            //     {
+            //         o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            //         o.JsonSerializerOptions.MaxDepth = 1;
+            //     });
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

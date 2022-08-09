@@ -102,7 +102,7 @@ namespace AirlineService.Controllers
                 DepartureAirport = flightDto.DepartureAirport,
                 ArrivalAirport = flightDto.ArrivalAirport,
                 MaxCapacity = flightDto.MaxCapacity,
-                Passengers = (ICollection<Booking>)passengers
+                Passengers = passengers
             };
 
             _context.Flights.Add(flight);

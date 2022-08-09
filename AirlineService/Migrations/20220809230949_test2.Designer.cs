@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AirlineService.Migrations
 {
     [DbContext(typeof(AirlineServiceDbContext))]
-    [Migration("20220805185727_Third Migration")]
-    partial class ThirdMigration
+    [Migration("20220809230949_test2")]
+    partial class test2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -40,7 +40,10 @@ namespace AirlineService.Migrations
 
                     b.HasIndex("PassengerId");
 
-                    b.ToTable("Booking");
+                    b.HasIndex("FlightId", "PassengerId")
+                        .IsUnique();
+
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("AirlineService.Models.Flight", b =>
@@ -71,12 +74,17 @@ namespace AirlineService.Migrations
 
                     b.Property<string>("FlightNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<int>("MaxCapacity")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FlightNumber")
+                        .IsUnique();
 
                     b.ToTable("Flights");
                 });
@@ -102,23 +110,42 @@ namespace AirlineService.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name");
+
                     b.ToTable("Passengers");
+                });
+
+            modelBuilder.Entity("FlightPassenger", b =>
+                {
+                    b.Property<int>("FlightId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PassengerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FlightId", "PassengerId");
+
+                    b.HasIndex("PassengerId");
+
+                    b.ToTable("FlightPassenger");
                 });
 
             modelBuilder.Entity("AirlineService.Models.Booking", b =>
                 {
                     b.HasOne("AirlineService.Models.Flight", "Flight")
-                        .WithMany("Passengers")
+                        .WithMany()
                         .HasForeignKey("FlightId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AirlineService.Models.Passenger", "Passenger")
-                        .WithMany("Flights")
+                        .WithMany()
                         .HasForeignKey("PassengerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -128,14 +155,19 @@ namespace AirlineService.Migrations
                     b.Navigation("Passenger");
                 });
 
-            modelBuilder.Entity("AirlineService.Models.Flight", b =>
+            modelBuilder.Entity("FlightPassenger", b =>
                 {
-                    b.Navigation("Passengers");
-                });
+                    b.HasOne("AirlineService.Models.Flight", null)
+                        .WithMany()
+                        .HasForeignKey("FlightId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("AirlineService.Models.Passenger", b =>
-                {
-                    b.Navigation("Flights");
+                    b.HasOne("AirlineService.Models.Passenger", null)
+                        .WithMany()
+                        .HasForeignKey("PassengerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

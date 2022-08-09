@@ -99,7 +99,7 @@ namespace AirlineService.Controllers
                 Job = passengerDto.Job,
                 Email = passengerDto.Email,
                 Age = passengerDto.Age,
-                Flights = (ICollection<Booking>)flights
+                Flights = flights,
             };
 
             _context.Passengers.Add(passenger);

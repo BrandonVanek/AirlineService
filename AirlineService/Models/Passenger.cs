@@ -1,4 +1,6 @@
-﻿namespace AirlineService.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace AirlineService.Models
 {
     public class Passenger
     {
@@ -7,6 +9,7 @@
         public string Job { get; set; }
         public string Email { get; set; }
         public int Age { get; set; }
-        public virtual ICollection<Booking> Flights { get; set; }
+        [ForeignKey("PassengerId")]
+        public virtual ICollection<Flight> Flights { get; set; }
     }
 }
