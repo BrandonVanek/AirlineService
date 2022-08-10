@@ -1,4 +1,6 @@
-﻿namespace AirlineService.DTO
+﻿
+
+namespace AirlineService.DTO
 {
     public class BookingDTO
     {

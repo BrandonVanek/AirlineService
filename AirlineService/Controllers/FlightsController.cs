@@ -41,7 +41,11 @@ namespace AirlineService.Controllers
           {
               return NotFound();
           }
-            var flight = await _context.Flights.FindAsync(id);
+            var flight = await _context.Flights
+               .Include(s => s.Bookings)
+               .ThenInclude(cs => cs.Passenger)
+               .FirstOrDefaultAsync(s => s.Id == id);
+            //var flight = await _context.Flights.FindAsync(id);
 
             if (flight == null)
             {
@@ -60,6 +64,7 @@ namespace AirlineService.Controllers
             {
                 return BadRequest();
             }
+
 
             _context.Entry(flight).State = EntityState.Modified;
 
@@ -92,7 +97,7 @@ namespace AirlineService.Controllers
               return Problem("Entity set 'FlightDbContext.Flights'  is null.");
           }
 
-            var passengers = new List<Passenger>();
+            var bookings = new List<Booking>();
             var flight = new Flight()
             {
                 FlightNumber = flightDto.FlightNumber,
@@ -102,7 +107,7 @@ namespace AirlineService.Controllers
                 DepartureAirport = flightDto.DepartureAirport,
                 ArrivalAirport = flightDto.ArrivalAirport,
                 MaxCapacity = flightDto.MaxCapacity,
-                Passengers = passengers
+                Bookings = bookings
             };
 
             _context.Flights.Add(flight);

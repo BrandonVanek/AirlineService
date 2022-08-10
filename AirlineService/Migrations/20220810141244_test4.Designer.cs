@@ -4,6 +4,7 @@ using AirlineService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AirlineService.Migrations
 {
     [DbContext(typeof(AirlineServiceDbContext))]
-    partial class AirlineServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220810141244_test4")]
+    partial class test4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,26 +24,7 @@ namespace AirlineService.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("AirlineService.Models.Booking", b =>
-                {
-                    b.Property<int>("FlightId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PassengerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConfirmationNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("FlightId", "PassengerId");
-
-                    b.HasIndex("PassengerId");
-
-                    b.ToTable("Bookings");
-                });
-
-            modelBuilder.Entity("AirlineService.Models.Flight", b =>
+            modelBuilder.Entity("AirlineService.DTO.FlightDTO", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -74,7 +57,110 @@ namespace AirlineService.Migrations
                     b.Property<int>("MaxCapacity")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PassengerId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PassengerId");
+
+                    b.ToTable("FlightDTO");
+                });
+
+            modelBuilder.Entity("AirlineService.DTO.PassengerDTO", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("FlightId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Job")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlightId");
+
+                    b.ToTable("PassengerDTO");
+                });
+
+            modelBuilder.Entity("AirlineService.Models.Booking", b =>
+                {
+                    b.Property<int>("FlightId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PassengerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConfirmationNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("FlightId", "PassengerId");
+
+                    b.HasIndex("PassengerId");
+
+                    b.HasIndex("FlightId", "PassengerId")
+                        .IsUnique();
+
+                    b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("AirlineService.Models.Flight", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ArrivalAirport")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ArrivalDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DepartureAirport")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DepartureDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Destination")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FlightNumber")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int>("MaxCapacity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlightNumber")
+                        .IsUnique();
 
                     b.ToTable("Flights");
                 });
@@ -100,23 +186,41 @@ namespace AirlineService.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(64)
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name");
+
                     b.ToTable("Passengers");
+                });
+
+            modelBuilder.Entity("AirlineService.DTO.FlightDTO", b =>
+                {
+                    b.HasOne("AirlineService.Models.Passenger", null)
+                        .WithMany("Flights")
+                        .HasForeignKey("PassengerId");
+                });
+
+            modelBuilder.Entity("AirlineService.DTO.PassengerDTO", b =>
+                {
+                    b.HasOne("AirlineService.Models.Flight", null)
+                        .WithMany("Passengers")
+                        .HasForeignKey("FlightId");
                 });
 
             modelBuilder.Entity("AirlineService.Models.Booking", b =>
                 {
                     b.HasOne("AirlineService.Models.Flight", "Flight")
-                        .WithMany("Bookings")
+                        .WithMany()
                         .HasForeignKey("FlightId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AirlineService.Models.Passenger", "Passenger")
-                        .WithMany("Bookings")
+                        .WithMany()
                         .HasForeignKey("PassengerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -128,12 +232,12 @@ namespace AirlineService.Migrations
 
             modelBuilder.Entity("AirlineService.Models.Flight", b =>
                 {
-                    b.Navigation("Bookings");
+                    b.Navigation("Passengers");
                 });
 
             modelBuilder.Entity("AirlineService.Models.Passenger", b =>
                 {
-                    b.Navigation("Bookings");
+                    b.Navigation("Flights");
                 });
 #pragma warning restore 612, 618
         }

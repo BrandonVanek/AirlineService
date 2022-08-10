@@ -35,13 +35,13 @@ namespace AirlineService.Controllers
 
         // GET: api/Bookings/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Booking>> GetBooking(int id)
+        public async Task<ActionResult<Booking>> GetBooking(int idFlight, int idPassenger)
         {
           if (_context.Bookings == null)
           {
               return NotFound();
           }
-            var booking = await _context.Bookings.FindAsync(id);
+            var booking = await _context.Bookings.FindAsync(idFlight, idPassenger);
 
             if (booking == null)
             {
@@ -54,9 +54,9 @@ namespace AirlineService.Controllers
         // PUT: api/Bookings/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBooking(int id, Booking booking)
+        public async Task<IActionResult> PutBooking(int idFlight, int idPassenger, Booking booking)
         {
-            if (id != booking.FlightId)
+            if (idFlight != booking.FlightId && idPassenger != booking.PassengerId)
             {
                 return BadRequest();
             }
@@ -69,7 +69,7 @@ namespace AirlineService.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!BookingExists(id))
+                if (!BookingExists(idFlight, idPassenger))
                 {
                     return NotFound();
                 }
@@ -94,10 +94,12 @@ namespace AirlineService.Controllers
             try {
                 var Flight = await _context.Flights.FirstOrDefaultAsync(f => f.Id == bookingDto.FlightId);
                 var Passenger = await _context.Passengers.FirstOrDefaultAsync(p => p.Id == bookingDto.PassengerId);
+
                 if (Flight == null || Passenger == null)
                 {
                     return Problem("Flight or Passenger does not exist.");
                 }
+
                 var booking = new Booking()
                 {
                     FlightId = bookingDto.FlightId,
@@ -107,18 +109,20 @@ namespace AirlineService.Controllers
                     ConfirmationNumber = bookingDto.ConfirmationNumber
                 };
 
+                if (Flight.Bookings == null)
+                {
+                    Flight.Bookings = new List<Booking>();
+                }
+                if (Passenger.Bookings == null)
+                {
+                    Passenger.Bookings = new List<Booking>();
+                }
+
                 _context.Bookings.Add(booking);
 
-                if (Flight.Passengers == null)
-                {
-                    Flight.Passengers = new List<Passenger>();
-                }
-                if (Passenger.Flights == null)
-                {
-                    Passenger.Flights = new List<Flight>();
-                }
-                Flight.Passengers.Add(Passenger);
-                Passenger.Flights.Add(Flight);
+                Passenger.Bookings.Add(booking);
+
+                Flight.Bookings.Add(booking);
 
                 _context.Update(Flight);
                 _context.Update(Passenger);
@@ -128,7 +132,7 @@ namespace AirlineService.Controllers
                 }
                 catch (DbUpdateException)
                 {
-                    if (BookingExists(booking.FlightId))
+                    if (BookingExists(booking.FlightId, booking.PassengerId))
                     {
                         return Conflict();
                     }
@@ -137,23 +141,23 @@ namespace AirlineService.Controllers
                         throw;
                     }
                 }
-                return CreatedAtAction("GetBooking", new { id = booking.FlightId }, booking);
+                return CreatedAtAction("GetBooking", new { id = booking.FlightId + booking.PassengerId }, booking);
             }
-            catch (Exception)
+            catch (DbUpdateConcurrencyException)
             {
                 throw;
             }
         }
 
         // DELETE: api/Bookings/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBooking(int id)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteBooking(int idFlight, int idPassenger)
         {
             if (_context.Bookings == null)
             {
                 return NotFound();
             }
-            var booking = await _context.Bookings.FindAsync(id);
+            var booking = await _context.Bookings.FindAsync(idFlight, idPassenger);
             if (booking == null)
             {
                 return NotFound();
@@ -165,9 +169,9 @@ namespace AirlineService.Controllers
             return NoContent();
         }
 
-        private bool BookingExists(int id)
+        private bool BookingExists(int idFlight, int idPassenger)
         {
-            return (_context.Bookings?.Any(e => e.FlightId == id)).GetValueOrDefault();
+            return (_context.Bookings?.Any(e => e.FlightId == idFlight && e.PassengerId == idPassenger)).GetValueOrDefault();
         }
     }
 }

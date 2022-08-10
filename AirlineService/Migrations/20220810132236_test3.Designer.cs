@@ -4,6 +4,7 @@ using AirlineService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AirlineService.Migrations
 {
     [DbContext(typeof(AirlineServiceDbContext))]
-    partial class AirlineServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220810132236_test3")]
+    partial class test3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,13 +112,13 @@ namespace AirlineService.Migrations
             modelBuilder.Entity("AirlineService.Models.Booking", b =>
                 {
                     b.HasOne("AirlineService.Models.Flight", "Flight")
-                        .WithMany("Bookings")
+                        .WithMany("Passengers")
                         .HasForeignKey("FlightId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AirlineService.Models.Passenger", "Passenger")
-                        .WithMany("Bookings")
+                        .WithMany("Flights")
                         .HasForeignKey("PassengerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -128,12 +130,12 @@ namespace AirlineService.Migrations
 
             modelBuilder.Entity("AirlineService.Models.Flight", b =>
                 {
-                    b.Navigation("Bookings");
+                    b.Navigation("Passengers");
                 });
 
             modelBuilder.Entity("AirlineService.Models.Passenger", b =>
                 {
-                    b.Navigation("Bookings");
+                    b.Navigation("Flights");
                 });
 #pragma warning restore 612, 618
         }

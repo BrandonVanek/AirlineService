@@ -50,20 +50,23 @@ namespace AirlineService.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfiguration(new FlightConfiguration());
-            modelBuilder.ApplyConfiguration(new PassengerConfiguration());
-            modelBuilder.ApplyConfiguration(new BookingConfiguration());
+            //base.OnModelCreating(modelBuilder);
+            //modelBuilder.ApplyConfiguration(new FlightConfiguration());
+            //modelBuilder.ApplyConfiguration(new PassengerConfiguration());
+            //modelBuilder.ApplyConfiguration(new BookingConfiguration());
 
-            //modelBuilder.Entity<Booking>()
-            //    .HasOne(pt => pt.Flight)
-            //    .WithMany(p => p.Passengers)
-            //    .HasForeignKey(pt => pt.FlightId);
+            modelBuilder.Entity<Booking>()
+                .HasOne(pt => pt.Flight)
+                .WithMany(p => p.Bookings)
+                .HasForeignKey(pt => pt.FlightId);
 
-            //modelBuilder.Entity<Booking>()
-            //    .HasOne(pt => pt.Passenger)
-            //    .WithMany(t => t.Flights)
-            //    .HasForeignKey(pt => pt.PassengerId);
+            modelBuilder.Entity<Booking>()
+                .HasOne(pt => pt.Passenger)
+                .WithMany(t => t.Bookings)
+                .HasForeignKey(pt => pt.PassengerId);
+
+            modelBuilder.Entity<Booking>()
+                .HasKey(t => new { t.FlightId, t.PassengerId });
 
             //modelBuilder.Entity<Flight>()
             //.HasMany(p => p.Passengers)

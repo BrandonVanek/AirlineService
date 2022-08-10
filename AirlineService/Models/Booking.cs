@@ -1,4 +1,6 @@
 ﻿using AirlineService.DTO;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace AirlineService.Models
 {
@@ -6,8 +8,10 @@ namespace AirlineService.Models
     {
         public int FlightId { get; set; }
         public int PassengerId { get; set; }
-        public Flight Flight { get; set; }
-        public Passenger Passenger { get; set; }
+        [JsonIgnore]
+        public virtual Flight Flight { get; set; }
+        [JsonIgnore]
+        public virtual Passenger Passenger { get; set; }
         public string ConfirmationNumber { get; set; }
     }
 }
