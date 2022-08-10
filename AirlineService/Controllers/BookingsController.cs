@@ -30,7 +30,7 @@ namespace AirlineService.Controllers
           {
               return NotFound();
           }
-            return await _context.Bookings.ToListAsync();
+            return await _context.Bookings.Include(p => p.Flight).ToListAsync();
         }
 
         // GET: api/Bookings/5
@@ -99,6 +99,10 @@ namespace AirlineService.Controllers
                 {
                     return Problem("Flight or Passenger does not exist.");
                 }
+                if (Flight.MaxCapacity == _context.Bookings.Count())
+                {
+                    return Problem("Flight has reached its maximum capacity.");
+                }
 
                 var booking = new Booking()
                 {
@@ -162,6 +166,18 @@ namespace AirlineService.Controllers
             {
                 return NotFound();
             }
+            var Flight = await _context.Flights.FirstOrDefaultAsync(f => f.Id == booking.FlightId);
+            var Passenger = await _context.Passengers.FirstOrDefaultAsync(p => p.Id == booking.PassengerId);
+            if (Flight == null || Passenger == null)
+            {
+                return Problem("Flight or Passenger error.");
+            }
+
+            Flight.Bookings.Remove(booking);
+            Passenger.Bookings.Remove(booking);
+
+            _context.Update(booking.Flight);
+            _context.Update(booking.Passenger);
 
             _context.Bookings.Remove(booking);
             await _context.SaveChangesAsync();

@@ -16,12 +16,12 @@ namespace AirlineService
             builder.Services.AddDbContext<AirlineServiceDbContext>(options => {
                 options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]);
             });
-            //builder.Services.AddControllers()
-            //     .AddJsonOptions(o =>
-            //     {
-            //         o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-            //         o.JsonSerializerOptions.MaxDepth = 1;
-            //     });
+            builder.Services.AddControllers()
+                 .AddJsonOptions(o =>
+                 {
+                     o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+                     //o.JsonSerializerOptions.MaxDepth = 0;
+                 });
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

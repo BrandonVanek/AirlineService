@@ -30,7 +30,7 @@ namespace AirlineService.Controllers
           {
               return NotFound();
           }
-            return await _context.Passengers.ToListAsync();
+            return await _context.Passengers.Include(p => p.Bookings).ToListAsync();
         }
 
         // GET: api/Passengers/5
@@ -120,10 +120,15 @@ namespace AirlineService.Controllers
             {
                 return NotFound();
             }
-            var passenger = await _context.Passengers.FindAsync(id);
+            var passenger = await _context.Passengers.Include(p => p.Bookings).FirstOrDefaultAsync(s => s.Id == id);
+
             if (passenger == null)
             {
                 return NotFound();
+            }
+            foreach (var booking in passenger.Bookings)
+            {
+                _context.Bookings.Remove(booking);
             }
 
             _context.Passengers.Remove(passenger);

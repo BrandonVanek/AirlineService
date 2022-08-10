@@ -15,7 +15,7 @@ namespace AirlineService.Models
         public string ArrivalAirport { get; set; }
         public int MaxCapacity { get; set; }
         //[ForeignKey("FlightId")]
-        [JsonIgnore]
+        //[JsonIgnore]
         public virtual ICollection<Booking> Bookings { get; set; }
     }
 }

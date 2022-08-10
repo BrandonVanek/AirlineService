@@ -12,7 +12,7 @@ namespace AirlineService.Models
         public string Email { get; set; }
         public int Age { get; set; }
         //[ForeignKey("PassengerId")]
-        [JsonIgnore]
+        //[JsonIgnore]
         public virtual ICollection<Booking> Bookings { get; set; }
     }
 }
