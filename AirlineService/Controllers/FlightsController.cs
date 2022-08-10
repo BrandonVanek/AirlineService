@@ -30,7 +30,10 @@ namespace AirlineService.Controllers
           {
               return NotFound();
           }
-            return await _context.Flights.Include(p => p.Bookings).ToListAsync();
+            return await _context.Flights
+                .Include(p => p.Bookings)
+                //.ThenInclude(cs => cs.Passenger)
+                .ToListAsync();
         }
 
         // GET: api/Flights/5
@@ -58,12 +61,34 @@ namespace AirlineService.Controllers
         // PUT: api/Flights/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFlight(int id, Flight flight)
+        public async Task<IActionResult> PutFlight(int id, FlightDTO flightDto)
         {
-            if (id != flight.Id)
+            //if (id != flight.Id)
+            //{
+            //    return BadRequest();
+            //}
+
+            if(flightDto == null)
             {
                 return BadRequest();
             }
+
+            var flight = await _context.Flights
+               .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (flight == null)
+            {
+                return Problem("Flight does not exist.");
+            }
+
+            flight.FlightNumber = flightDto.FlightNumber;
+            flight.ArrivalAirport = flightDto.ArrivalAirport;
+            flight.DepartureAirport = flightDto.DepartureAirport;
+            flight.ArrivalDateTime = flightDto.ArrivalDateTime;
+            flight.DepartureDateTime = flightDto.DepartureDateTime;
+            flight.Destination = flightDto.Destination;
+            flight.MaxCapacity = flightDto.MaxCapacity;
+            _context.Update(flight);
 
 
             _context.Entry(flight).State = EntityState.Modified;

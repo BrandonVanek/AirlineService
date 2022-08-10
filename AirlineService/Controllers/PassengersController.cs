@@ -30,7 +30,10 @@ namespace AirlineService.Controllers
           {
               return NotFound();
           }
-            return await _context.Passengers.Include(p => p.Bookings).ToListAsync();
+            return await _context.Passengers
+                .Include(p => p.Bookings)
+                //.ThenInclude(cs => cs.Flight)
+                .ToListAsync();
         }
 
         // GET: api/Passengers/5
@@ -58,12 +61,30 @@ namespace AirlineService.Controllers
         // PUT: api/Passengers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPassenger(int id, Passenger passenger)
+        public async Task<IActionResult> PutPassenger(int id, PassengerDTO passengerDto)
         {
-            if (id != passenger.Id)
+            //if (id != passenger.Id)
+            //{
+            //    return BadRequest();
+            //}
+            if (passengerDto == null)
             {
                 return BadRequest();
             }
+
+            var passenger = await _context.Passengers
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (passenger == null)
+            {
+                return Problem("Passenger does not exist.");
+            }
+
+            passenger.Name = passengerDto.Name;
+            passenger.Job = passengerDto.Job;
+            passenger.Email = passengerDto.Email;
+            passenger.Age = passengerDto.Age;
+            _context.Update(passenger);
 
             _context.Entry(passenger).State = EntityState.Modified;
 
