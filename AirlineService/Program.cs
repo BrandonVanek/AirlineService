@@ -12,16 +12,29 @@ namespace AirlineService
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    policy =>
+                    {
+                        policy.AllowAnyOrigin();
+                        policy.AllowAnyMethod();
+                        policy.AllowAnyHeader();
+                    });
+            });
+
             // Add services to the container.
-            builder.Services.AddDbContext<AirlineServiceDbContext>(options => {
+            builder.Services.AddDbContext<AirlineServiceDbContext>(options =>
+            {
                 options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]);
             });
-            builder.Services.AddControllers()
-                 .AddJsonOptions(o =>
-                 {
-                     o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-                     //o.JsonSerializerOptions.MaxDepth = 0;
-                 });
+
+            //builder.Services.AddControllers()
+            //     .AddJsonOptions(o =>
+            //     {
+            //         o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            //         //o.JsonSerializerOptions.MaxDepth = 0;
+            //     });
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -39,8 +52,15 @@ namespace AirlineService
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseCors("AllowAll");
 
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                await next();
+            });
+
+            app.UseAuthorization();
 
             app.MapControllers();
 

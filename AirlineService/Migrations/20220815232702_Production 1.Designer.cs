@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AirlineService.Migrations
 {
     [DbContext(typeof(AirlineServiceDbContext))]
-    [Migration("20220810132236_test3")]
-    partial class test3
+    [Migration("20220815232702_Production 1")]
+    partial class Production1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,17 +26,25 @@ namespace AirlineService.Migrations
 
             modelBuilder.Entity("AirlineService.Models.Booking", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ConfirmationNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("FlightId")
                         .HasColumnType("int");
 
                     b.Property<int>("PassengerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ConfirmationNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("Id");
 
-                    b.HasKey("FlightId", "PassengerId");
+                    b.HasIndex("FlightId");
 
                     b.HasIndex("PassengerId");
 
@@ -112,13 +120,13 @@ namespace AirlineService.Migrations
             modelBuilder.Entity("AirlineService.Models.Booking", b =>
                 {
                     b.HasOne("AirlineService.Models.Flight", "Flight")
-                        .WithMany("Passengers")
+                        .WithMany("Bookings")
                         .HasForeignKey("FlightId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AirlineService.Models.Passenger", "Passenger")
-                        .WithMany("Flights")
+                        .WithMany("Bookings")
                         .HasForeignKey("PassengerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -130,12 +138,12 @@ namespace AirlineService.Migrations
 
             modelBuilder.Entity("AirlineService.Models.Flight", b =>
                 {
-                    b.Navigation("Passengers");
+                    b.Navigation("Bookings");
                 });
 
             modelBuilder.Entity("AirlineService.Models.Passenger", b =>
                 {
-                    b.Navigation("Flights");
+                    b.Navigation("Bookings");
                 });
 #pragma warning restore 612, 618
         }

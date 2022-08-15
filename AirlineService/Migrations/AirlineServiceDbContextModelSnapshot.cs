@@ -24,17 +24,25 @@ namespace AirlineService.Migrations
 
             modelBuilder.Entity("AirlineService.Models.Booking", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ConfirmationNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("FlightId")
                         .HasColumnType("int");
 
                     b.Property<int>("PassengerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ConfirmationNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("Id");
 
-                    b.HasKey("FlightId", "PassengerId");
+                    b.HasIndex("FlightId");
 
                     b.HasIndex("PassengerId");
 

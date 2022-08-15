@@ -1,11 +1,11 @@
 ﻿using AirlineService.DTO;
-using Newtonsoft.Json;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace AirlineService.Models
 {
     public class Booking
     {
+        public int Id { get; set; }
         public int FlightId { get; set; }
         public int PassengerId { get; set; }
         [JsonIgnore]

@@ -1,6 +1,4 @@
 ﻿using AirlineService.DTO;
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AirlineService.Models
 {
@@ -14,8 +12,19 @@ namespace AirlineService.Models
         public string DepartureAirport { get; set; }
         public string ArrivalAirport { get; set; }
         public int MaxCapacity { get; set; }
-        //[ForeignKey("FlightId")]
-        //[JsonIgnore]
         public virtual ICollection<Booking> Bookings { get; set; }
+        public Flight() { }
+        public Flight(FlightDTO flightDTO)
+        {
+            FlightNumber = flightDTO.FlightNumber;
+            Destination = flightDTO.Destination;
+            DepartureDateTime = flightDTO.DepartureDateTime;
+            ArrivalDateTime = flightDTO.ArrivalDateTime;
+            ArrivalAirport = flightDTO.ArrivalAirport;
+            DepartureAirport = flightDTO.DepartureAirport;
+            ArrivalAirport = flightDTO.ArrivalAirport;
+            MaxCapacity = flightDTO.MaxCapacity;
+            Bookings = new List<Booking>();
+        }
     }
 }

@@ -1,7 +1,8 @@
-﻿
+﻿using AirlineService.Models;
+
 namespace AirlineService.DTO
 {
-    public class FlightDTO
+    public class FlightDetailsDTO
     {
         public int Id { get; set; }
         public string FlightNumber { get; set; }
@@ -11,5 +12,6 @@ namespace AirlineService.DTO
         public string DepartureAirport { get; set; }
         public string ArrivalAirport { get; set; }
         public int MaxCapacity { get; set; }
+        public List<Passenger> Bookings { get; set; }
     }
 }

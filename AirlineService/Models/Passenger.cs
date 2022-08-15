@@ -1,5 +1,4 @@
 ﻿using AirlineService.DTO;
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AirlineService.Models
@@ -11,8 +10,15 @@ namespace AirlineService.Models
         public string Job { get; set; }
         public string Email { get; set; }
         public int Age { get; set; }
-        //[ForeignKey("PassengerId")]
-        //[JsonIgnore]
         public virtual ICollection<Booking> Bookings { get; set; }
+        public Passenger() { }
+        public Passenger(PassengerDTO passengerDTO)
+        {
+            Name = passengerDTO.Name;
+            Job = passengerDTO.Job;
+            Email = passengerDTO.Email;
+            Age = passengerDTO.Age;
+            Bookings = new List<Booking>();
+        }
     }
 }

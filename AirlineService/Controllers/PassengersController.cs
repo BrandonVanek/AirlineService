@@ -31,7 +31,7 @@ namespace AirlineService.Controllers
               return NotFound();
           }
             return await _context.Passengers
-                .Include(p => p.Bookings)
+                //.Include(p => p.Bookings)
                 //.ThenInclude(cs => cs.Flight)
                 .ToListAsync();
         }
@@ -44,47 +44,40 @@ namespace AirlineService.Controllers
           {
               return NotFound();
           }
-            var passenger = await _context.Passengers
-                 .Include(s => s.Bookings)
-                 .ThenInclude(cs => cs.Flight)
-                 .FirstOrDefaultAsync(s => s.Id == id);
-            //var passenger = await _context.Passengers.FindAsync(id);
+            //var passenger = await _context.Passengers
+            //     .Include(s => s.Bookings)
+            //     .ThenInclude(cs => cs.Flight)
+            //     .FirstOrDefaultAsync(s => s.Id == id);
+            var passenger = await _context.Passengers.FindAsync(id);
 
             if (passenger == null)
             {
                 return NotFound();
             }
+            var bookings = await _context.Flights.Where(p => p.Bookings.Where(op => op.PassengerId == passenger.Id).Any()).ToListAsync();
 
-            return passenger;
+            var passengerDto = new PassengerDetailsDTO
+            {
+                Id = passenger.Id,
+                Name = passenger.Name,
+                Job = passenger.Job,
+                Email = passenger.Email,
+                Age = passenger.Age,
+                Bookings = bookings
+            };
+
+            return Ok(passengerDto);
         }
 
         // PUT: api/Passengers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPassenger(int id, PassengerDTO passengerDto)
+        public async Task<IActionResult> PutPassenger(int id, Passenger passenger)
         {
-            //if (id != passenger.Id)
-            //{
-            //    return BadRequest();
-            //}
-            if (passengerDto == null)
+            if (id != passenger.Id)
             {
                 return BadRequest();
             }
-
-            var passenger = await _context.Passengers
-            .FirstOrDefaultAsync(s => s.Id == id);
-
-            if (passenger == null)
-            {
-                return Problem("Passenger does not exist.");
-            }
-
-            passenger.Name = passengerDto.Name;
-            passenger.Job = passengerDto.Job;
-            passenger.Email = passengerDto.Email;
-            passenger.Age = passengerDto.Age;
-            _context.Update(passenger);
 
             _context.Entry(passenger).State = EntityState.Modified;
 
@@ -117,16 +110,7 @@ namespace AirlineService.Controllers
               return Problem("Entity set 'AirlineServiceDbContext.Passengers'  is null.");
           }
 
-            var bookings = new List<Booking>();
-            var passenger = new Passenger()
-            {
-                Name = passengerDto.Name,
-                Job = passengerDto.Job,
-                Email = passengerDto.Email,
-                Age = passengerDto.Age,
-                Bookings = bookings,
-            };
-
+            var passenger = new Passenger(passengerDto);
             _context.Passengers.Add(passenger);
             await _context.SaveChangesAsync();
 
@@ -141,16 +125,16 @@ namespace AirlineService.Controllers
             {
                 return NotFound();
             }
-            var passenger = await _context.Passengers.Include(p => p.Bookings).FirstOrDefaultAsync(s => s.Id == id);
+            var passenger = await _context.Passengers.FindAsync(id);
 
             if (passenger == null)
             {
                 return NotFound();
             }
-            foreach (var booking in passenger.Bookings)
-            {
-                _context.Bookings.Remove(booking);
-            }
+            //foreach (var booking in passenger.Bookings)
+            //{
+            //    _context.Bookings.Remove(booking);
+            //}
 
             _context.Passengers.Remove(passenger);
             await _context.SaveChangesAsync();

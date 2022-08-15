@@ -31,7 +31,7 @@ namespace AirlineService.Controllers
               return NotFound();
           }
             return await _context.Flights
-                .Include(p => p.Bookings)
+                //.Include(p => p.Bookings)
                 //.ThenInclude(cs => cs.Passenger)
                 .ToListAsync();
         }
@@ -45,9 +45,9 @@ namespace AirlineService.Controllers
               return NotFound();
           }
             var flight = await _context.Flights
-               .Include(s => s.Bookings)
-               .ThenInclude(cs => cs.Passenger)
-               .FirstOrDefaultAsync(s => s.Id == id);
+               //.Include(s => s.Bookings)
+               //.ThenInclude(cs => cs.Passenger)
+               .FindAsync(id);
             //var flight = await _context.Flights.FindAsync(id);
 
             if (flight == null)
@@ -55,42 +55,33 @@ namespace AirlineService.Controllers
                 return NotFound();
             }
 
-            return flight;
+            var bookings = await _context.Passengers.Where(p => p.Bookings.Where(op => op.FlightId == flight.Id).Any()).ToListAsync();
+
+            var flightDto = new FlightDetailsDTO
+            {
+                Id = flight.Id,
+                FlightNumber = flight.FlightNumber,
+                Destination = flight.Destination,
+                DepartureDateTime = flight.DepartureDateTime,
+                ArrivalDateTime = flight.ArrivalDateTime,
+                DepartureAirport = flight.DepartureAirport,
+                ArrivalAirport = flight.ArrivalAirport,
+                MaxCapacity = flight.MaxCapacity,
+                Bookings = bookings
+            };
+
+            return Ok(flightDto);
         }
 
         // PUT: api/Flights/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutFlight(int id, FlightDTO flightDto)
+        public async Task<IActionResult> PutFlight(int id, Flight flight)
         {
-            //if (id != flight.Id)
-            //{
-            //    return BadRequest();
-            //}
-
-            if(flightDto == null)
+            if (id != flight.Id)
             {
                 return BadRequest();
             }
-
-            var flight = await _context.Flights
-               .FirstOrDefaultAsync(s => s.Id == id);
-
-            if (flight == null)
-            {
-                return Problem("Flight does not exist.");
-            }
-
-            flight.FlightNumber = flightDto.FlightNumber;
-            flight.ArrivalAirport = flightDto.ArrivalAirport;
-            flight.DepartureAirport = flightDto.DepartureAirport;
-            flight.ArrivalDateTime = flightDto.ArrivalDateTime;
-            flight.DepartureDateTime = flightDto.DepartureDateTime;
-            flight.Destination = flightDto.Destination;
-            flight.MaxCapacity = flightDto.MaxCapacity;
-            _context.Update(flight);
-
-
             _context.Entry(flight).State = EntityState.Modified;
 
             try
@@ -122,23 +113,11 @@ namespace AirlineService.Controllers
               return Problem("Entity set 'FlightDbContext.Flights'  is null.");
           }
 
-            var bookings = new List<Booking>();
-            var flight = new Flight()
-            {
-                FlightNumber = flightDto.FlightNumber,
-                Destination = flightDto.Destination,
-                DepartureDateTime = flightDto.DepartureDateTime,
-                ArrivalDateTime = flightDto.ArrivalDateTime,
-                DepartureAirport = flightDto.DepartureAirport,
-                ArrivalAirport = flightDto.ArrivalAirport,
-                MaxCapacity = flightDto.MaxCapacity,
-                Bookings = bookings
-            };
-
+            var flight = new Flight(flightDto);
             _context.Flights.Add(flight);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetFlight", new { id = flight.Id }, flightDto);
+            return CreatedAtAction("GetFlight", new { id = flight.Id }, flight);
         }
 
         // DELETE: api/Flights/5
@@ -149,17 +128,17 @@ namespace AirlineService.Controllers
             {
                 return NotFound();
             }
-            var flight = await _context.Flights.Include(p => p.Bookings).FirstOrDefaultAsync(s => s.Id == id);
+            var flight = await _context.Flights.FindAsync(id);
 
             if (flight == null)
             {
                 return NotFound();
             }
 
-            foreach (var booking in flight.Bookings)
-            {
-                _context.Bookings.Remove(booking);
-            }
+            //foreach (var booking in flight.Bookings)
+            //{
+            //    _context.Bookings.Remove(booking);
+            //}
 
             _context.Flights.Remove(flight);
             await _context.SaveChangesAsync();
