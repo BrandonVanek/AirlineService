@@ -10,5 +10,6 @@ namespace AirlineService.DTO
         public string Email { get; set; }
         public int Age { get; set; }
         public List<Flight> Bookings { get; set; }
+        public List<string> ConfirmationNumber { get; set; }
     }
 }

@@ -144,7 +144,7 @@ namespace AirlineService.Controllers
             }
             var Flight = await _context.Flights.FirstOrDefaultAsync(f => f.Id == bookingDto.FlightId);
             var Passenger = await _context.Passengers.FirstOrDefaultAsync(p => p.Id == bookingDto.PassengerId);
-            
+
             if (Flight == null || Passenger == null)
             {
                 return Problem("Flight or Passenger does not exist.");
@@ -155,7 +155,8 @@ namespace AirlineService.Controllers
                 return Problem("Flight has reached its maximum capacity.");
             }
 
-            var booking = new Booking() {
+            var booking = new Booking()
+            {
                 FlightId = bookingDto.FlightId,
                 PassengerId = bookingDto.PassengerId,
                 ConfirmationNumber = bookingDto.ConfirmationNumber,
@@ -168,66 +169,7 @@ namespace AirlineService.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetBooking", new { id = booking.Id }, booking);
-            //try {
-            //    var Flight = await _context.Flights.FirstOrDefaultAsync(f => f.Id == bookingDto.FlightId);
-            //    var Passenger = await _context.Passengers.FirstOrDefaultAsync(p => p.Id == bookingDto.PassengerId);
-
-            //    if (Flight == null || Passenger == null)
-            //    {
-            //        return Problem("Flight or Passenger does not exist.");
-            //    }
-            //    if (Flight.MaxCapacity == _context.Bookings.Count())
-            //    {
-            //        return Problem("Flight has reached its maximum capacity.");
-            //    }
-
-            //    var booking = new Booking()
-            //    {
-            //        FlightId = bookingDto.FlightId,
-            //        PassengerId = bookingDto.PassengerId,
-            //        Flight = Flight,
-            //        Passenger = Passenger,
-            //        ConfirmationNumber = bookingDto.ConfirmationNumber
-            //    };
-
-            //    if (Flight.Bookings == null)
-            //    {
-            //        Flight.Bookings = new List<Booking>();
-            //    }
-            //    if (Passenger.Bookings == null)
-            //    {
-            //        Passenger.Bookings = new List<Booking>();
-            //    }
-
-            //    _context.Bookings.Add(booking);
-
-            //    Passenger.Bookings.Add(booking);
-
-            //    Flight.Bookings.Add(booking);
-
-            //    _context.Update(Flight);
-            //    _context.Update(Passenger);
-            //    try
-            //    {
-            //        await _context.SaveChangesAsync();
-            //    }
-            //    catch (DbUpdateException)
-            //    {
-            //        if (BookingExists(booking.FlightId, booking.PassengerId))
-            //        {
-            //            return Conflict();
-            //        }
-            //        else
-            //        {
-            //            throw;
-            //        }
-            //    }
-            //    return CreatedAtAction("GetBooking", new { id = booking.FlightId + booking.PassengerId }, booking);
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    throw;
-            //}
+            
         }
 
         // DELETE: api/Bookings/5

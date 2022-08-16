@@ -55,7 +55,17 @@ namespace AirlineService.Controllers
                 return NotFound();
             }
             var bookings = await _context.Flights.Where(p => p.Bookings.Where(op => op.PassengerId == passenger.Id).Any()).ToListAsync();
+            var tickets = await _context.Bookings.Where(p => p.PassengerId == passenger.Id).ToListAsync();
+            if (tickets == null)
+            {
+                return NotFound();
+            }
+            List<string> confirmationNumbers = new List<string>();
+            foreach(Booking booking in tickets)
+            {
+                confirmationNumbers.Append(booking.ConfirmationNumber);
 
+            }
             var passengerDto = new PassengerDetailsDTO
             {
                 Id = passenger.Id,
@@ -63,7 +73,8 @@ namespace AirlineService.Controllers
                 Job = passenger.Job,
                 Email = passenger.Email,
                 Age = passenger.Age,
-                Bookings = bookings
+                Bookings = bookings,
+                ConfirmationNumber = confirmationNumbers
             };
 
             return Ok(passengerDto);
