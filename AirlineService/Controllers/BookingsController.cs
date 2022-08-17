@@ -150,10 +150,10 @@ namespace AirlineService.Controllers
                 return Problem("Flight or Passenger does not exist.");
             }
 
-            if (Flight.MaxCapacity == _context.Bookings.Count())
-            {
-                return Problem("Flight has reached its maximum capacity.");
-            }
+            //if (Flight.MaxCapacity == _context.Bookings.Count())
+            //{
+            //    return Problem("Flight has reached its maximum capacity.");
+            //}
 
             var booking = new Booking()
             {
